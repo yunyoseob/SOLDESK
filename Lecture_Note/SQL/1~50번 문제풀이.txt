@@ -1,0 +1,196 @@
+여러분 TEST에 아래 내용을 참조했습니다.
+차이가 있는 내용은 아래 QUERY를 참조해서
+완성하세요. 
+
+-- 1번 부서번호가 10번인 부서의 사람 중 사원번호, 이름, 월급을 출력하라.
+
+SELECT 
+EMPNO AS 사원번호,
+ENAME AS 이름,
+SAL AS 월급
+FROM EMP
+WHERE DEPTNO = 10;
+
+-- 2번 사원번호가 7369인 사람 중 이름, 입사일, 부서번호를 출력하라.
+
+SELECT 
+ENAME AS 이름,
+HIREDATE AS 입사일,
+DEPTNO AS 부서번호
+FROM EMP
+WHERE EMPNO = 7369;
+
+
+-- 3번 이름이 ALLEN인 사람의 모든 정보를 출력하라.
+SELECT 
+EMPNO AS 사원번호,
+ENAME AS 이름,
+JOB AS 직무,
+MGR AS 매니저,
+HIREDATE AS 입사일,
+SAL AS 급여,
+COMM AS 커미션,
+DEPTNO AS 부서번호
+FROM EMP
+WHERE ENAME = 'ALLEN';
+
+
+-- 5번 직업이 MANAGER가 아닌 사람의 모든 정보를 출력하라.
+SELECT 
+EMPNO AS 사원번호,
+ENAME AS 이름,
+JOB AS 직무,
+MGR AS 매니저,
+HIREDATE AS 입사일,
+SAL AS 급여,
+COMM AS 커미션,
+DEPTNO AS 부서번호
+FROM EMP
+WHERE JOB <> 'MANAGER';
+
+
+-- 12번 입사일이 81/04/02보다 늦고 82/12/09보다 빠른 사원의 이름, 월급, 부서번호를 출력하라.
+SELECT 
+ENAME AS 이름,
+SAL AS 급여,
+DEPTNO AS 부서번호
+FROM EMP
+WHERE HIREDATE > '81/04/02' AND HIREDATE < '82/12/09';
+
+
+
+-- 13번 급여가 $1,600보다 크고 $3,000보다 작은 사람의 이름, 직업, 급여를 출력하라.
+
+SELECT 
+EMPNO AS 사원번호,
+ENAME AS 이름,
+JOB AS 직무,
+MGR AS 매니저,
+HIREDATE AS 입사일,
+SAL AS 급여,
+COMM AS 커미션,
+DEPTNO AS 부서번호
+FROM EMP
+WHERE SAL >1600 AND SAL < 3000;
+
+
+-- 14번 사원번호가 7654와 7782 사이 이외의 사원의 모든 정보를 출력하라.
+
+SELECT 
+EMPNO AS 사원번호,
+ENAME AS 이름,
+JOB AS 직무,
+MGR AS 매니저,
+HIREDATE AS 입사일,
+SAL AS 급여,
+COMM AS 커미션,
+DEPTNO AS 부서번호
+FROM EMP
+WHERE EMPNO > 7654 AND EMPNO < 7782;
+
+
+-- 15번 이름이 B와 J사이의 모든 사원의 정보를 출력하라.
+SELECT 
+EMPNO AS 사원번호,
+ENAME AS 이름,
+JOB AS 직무,
+MGR AS 매니저,
+HIREDATE AS 입사일,
+SAL AS 급여,
+COMM AS 커미션,
+DEPTNO AS 부서번호
+FROM EMP
+WHERE ENAME > CHR(ASCII('B')+1) AND ENAME < 'J';
+
+-- 20번 입사일이 81년도인 사람의 모든 정보를 출력하라.
+SELECT 
+EMPNO AS 사원번호,
+ENAME AS 이름,
+HIREDATE AS 입사일,
+DEPTNO AS 부서번호
+FROM EMP
+WHERE SUBSTR(HIREDATE, 1, 2) = '81';
+
+
+-- 21번 이름 중 S자가 들어가 있는 사람만 모든 정보를 출력하라.
+SELECT 
+EMPNO AS 사원번호,
+ENAME AS 이름,
+HIREDATE AS 입사일,
+DEPTNO AS 부서번호
+FROM EMP
+
+--WHERE UPPER(ENAME) LIKE '%S%';
+WHERE ENAME LIKE '%S%';
+
+
+
+-- 22번 이름이 S로 시작하고 마지막 글자가 T인 사람의 모든 정보를 출력하라(단, 이름은 전체 5자리이다.)
+SELECT 
+EMPNO AS 사원번호,
+ENAME AS 이름,
+HIREDATE AS 입사일,
+DEPTNO AS 부서번호
+FROM EMP
+--WHERE ENAME LIKE 'S___T';
+WHERE ENAME LIKE 'S%' AND SUBSTR(ENAME, -1,1) = 'T' ;
+
+
+-- 23번 첫 번쨰 문자는 관계없고, 두 번쨰 문자가 A인 사람의 정보를 출력하라.
+
+SELECT 
+EMPNO AS 사원번호,
+ENAME AS 이름,
+JOB AS 직무,
+MGR AS 매니저,
+HIREDATE AS 입사일,
+SAL AS 급여,
+COMM AS 커미션,
+DEPTNO AS 부서번호
+FROM EMP
+
+--WHERE SUBSTR(ENAME, 2, 1) = 'A';
+WHERE ENAME LIKE '_A%';
+
+
+-- 47번 이름의 글자수가 6자 이상인 사람의 이름을 앞에서 3자리만 구하여 소문자로 이름만을 출력하라.
+SELECT 
+ENAME AS 이름,
+LOWER(SUBSTR(ENAME,1 ,3)) AS "소문자 변환"
+FROM EMP
+WHERE LENGTH(ENAME) >= 6;
+
+
+-- 48번 10번 부서 월급의 평균, 최고, 최저, 인원수를 구하여 출력하라.
+SELECT 
+--TRUNC(AVG(SAL)) AS 평균,
+ROUND(AVG(SAL), 1) AS 평균,
+MAX(SAL) AS 최고,
+MIN(SAL) AS 최저,
+COUNT(*) AS 인원수
+FROM EMP
+WHERE DEPTNO = 10;
+
+
+-- 49번 각 부서별 급여의 평균, 최고, 최저, 인원수를 구하여 출력하라.
+SELECT 
+--TRUNC(AVG(SAL)) AS 평균,
+ROUND(AVG(SAL), 1) AS 평균,
+MAX(SAL) AS 최고,
+MIN(SAL) AS 최저,
+COUNT(*) AS 인원수,
+DEPTNO AS 부서번호
+FROM EMP
+GROUP BY DEPTNO;
+
+
+-- 50번 각 부서별 같은 업무를 하는 사람의 인원수를 구하여 부서번호, 업무명, 인원수를 출력하라.
+SELECT 
+DEPTNO AS 부서번호,
+JOB AS 업무명,
+COUNT(*) AS 인원수
+FROM EMP
+GROUP BY DEPTNO, JOB
+ORDER BY DEPTNO;
+
+

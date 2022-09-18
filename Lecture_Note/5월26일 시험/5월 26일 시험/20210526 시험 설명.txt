@@ -1,0 +1,121 @@
+20210526 시험 설명
+
+<탐색적 데이터 분석>
+1. 속도 칼럼을 만들고 boxplot과 정규분포형식으로 살펴 본결과 이상치가 존재하는 것을  확인 할 수 있다.
+
+2. df_train.info()의 pickup_datetime과 dropoff_datetime과
+df_test.info()의 pickup_datetime의 유형을 살펴보면 object 형식으로 되어있는 것을 확인 할 수 있다.
+ 이에 따라, pandas.to_datetime을 통해 날짜형식으로 변환한 결과
+ df_train.info()의 pickup_datetime과 dropoff_datetime과
+df_test.info()의 pickup_datetime의 유형이 datetime64[ns]유형으로 바뀐 것을 확인 할 수 있다.
+
+또한, datetime 칼럼을  dt.strftime과 dt.를 통해 각각 해당하는 월,일,시간 등등으로 나누어서
+칼럼을 만들 수 있다.
+
+3. harversine거리를 적용하면 위.경도의 각도의 차이에 따른 거리를 계산하여 위.경도 거리를 구할 수 있다.
+실제로 구글맵에 출발 지점을 바루크 대학으로 도착 지점을 Sky Luxury Apartment로 설정했을 때,
+구글맵 거리측정 도구를 이용해 잰 거리와 Harversine 거리가 유사한 것을 확인 할 수 있다.
+
+
+4. train데이터에 vendor_id 칼럼과 passenger_count 칼럼, store_and_fwd_flag 칼럼은
+범주형 변수에 해당한다. (특정 정수값으로 이루어져 있음.)
+이에 따라, pd.get_dummies를 이용하여 원핫인코딩을 해주고 이를 원래 train데이터와 test데이터에
+join해주면 원핫인코딩한 결과값이 train데이터와 test데이터로 들어간다.
+
+원핫인코딩한 변수들이 데이터에 들어왔으면, 기존의 범주형 변수들을 드랍해준다.
+
+5. 실제로 train데이터의 거리와 속도에 따라 거리=속력*시간이므로 속력은 거리/시간이다.
+거리와 시간의 이상치를 IQR로 제거하고 나서, 이를 기준으로 km/h를 계산하여 확인해본 결과,
+최저속도는 0km/h인데, 최고 속도는 1398km/h가 나오는 것을 확인 할 수 있으며, boxplot으로
+봤을 때, 그 편차가 매우 심한 것을 확인 할 수 있다. 실제로 문제가 시간(trip_duration)을
+맞추는 문제이니 만큼 시간과 관련된 거리와 속력의 편차가 너무 심할 경우, 모델의 정확도가 떨어질 수 있다.
+(최고 속도 기준으로 차가 음속보다 빠른 건 상식적으로 납득하기 어렵다.)
+
+따라서,  IQR을 통해 너무 속도가 낮거나(25%미만), 너무 속도가 높은(75%) 데이터들을 이상치로 간주하고
+제거해줄 필요가 있다. 
+
+
+<머신러닝 데이터 분석>
+1. Train데이터를 Train으로 설정하고 test데이터를 test로 설정할 시에, 
+drop해야 하는 칼럼의 경우는 다음과 같다.
+1) train 데이터에는 있는 칼럼이나, test 데이터에는 없는 칼럼
+2) y_train 혹은 y_test 즉, 타겟이 될 칼럼
+
+1)의 경우,  shape이 맞지 않아서 train데이터와 test데이터의 칼럼을 맞춰주기 위해 제거해야 한다.
+2)의 경우, target데이터의 칼럼을 train데이터에 입력해줄 경우 훈련모델에 정답을 주는 것이기 때문에
+정확히 훈련을 진행 할 수 없다.
+
+따라서, train데이터에서는 타겟이 될 trip_duration과 test데이터에는 없는 time_dropoff, km_h를 드랍해준다.
+(elapsed_time_h의 경우는 trip_duration을 보기 편하게 1시간 기준으로 다시 만든 칼럼이므로 같이 드랍해준다.)
+
+2. XGBoost와 Lightgbm의 두 모델을 비교해보았을 때, y_train(==trip_duraion)이 있으므로,
+train데이터의 score는 알 수 있지만, test데이터는 y_test가 없으므로 x_test를 통해 예측해야한다.
+
+이 때, 두 모델을 비교할 수 있는 방법은 크게 두 가지가 있는데, train데이터를 train데이터와 test데이터로
+나눈 후 test score를 비교하거나, 아니면 train데이터와 test데이터를 넣고, train데이터의 score를 비교 할
+수 있다. 
+
+Linear Regression과 Lightgbm의 두 모델을 실제로 적용해본 결과, Linear Regression의 train점수는
+0.50점이였으며, Lightgbm의 train점수는 0.546이 나왔다. 이에 따라 확률적으로 Lightgbm의 결과가
+Linear Regression보다 좋다는 것을 유추할 수 있다. 다만, 항상 train score가 높다고 해서
+반드시, test점수도 높으라는 법은 없으므로, 단정지어서 말할 수는 없다.
+
+이를 보완하기 위해, train데이터를 train데이터와 test데이터로 나누어서 test score로 비교하는 방법도 있다.
+
+(실제 캐글에 제출한 결과에서도 Lightgbm의 결과가 더 좋게 나왔다.)
+
+3. Lightgbm모델에  GridSearchCV를 통해 
+param_grid=[{'n_estimators':[1,10,100], 'max_features':[1,5,10]},
+           {'bootstrap':[False],'learning_rate':[0.1,0.05,0.01],'max_depth':[1,5,10],
+           'sub_sample':[0.5,0.7,1.0]},]
+으로 파라미터를 부여했으며,
+grid_search.best_params=={'max_features': 1, 'n_estimators': 100}가 나왔으므로,
+
+이를 Lightgbm의 하이퍼 파라미터로 결정하였다.
+
+
+4. OLS 방법을 적용해보시오.
+적용한 코드와 summary도 밝히고 결과를 해석하시오.
+
+R-squared는 결정 계수를 의미하며, 추정한 선형 모형이 주어진 자료에 얼마나 적합한지 보는 척도이다. 
+Adj.R-squared는 자유도를 고려하여 수정한 결정계수를 의미한다.
+F-statistic은 회귀모형에 대한 유의미성 검증 결과를 나타낸다. 유의미함 (p < 0.05)
+가령 선형회귀식이 y=a+bx 라고 했을 때,
+coef는 각 a,b와 관련된 정보를 알 수 있다.(계수의 추정치)
+const는 회귀 절편인 a이며,
+아래 정보들은 회귀의 기울기인 b라고 할 수 있다.
+aic, bic는 로그 우도를 독립변수의 수로 보정한 값으로 작을 수록 좋다.
+P(>|t|)는 모집단에서 계수가 0일 때, 현재와 같은 크기의 표본에서 이러한 계수가 추정될 확률을 나타낸다.
+보통 0.05 이하이면 유의미하다고 볼 수 있다.
+
+
+이를 통해 정보를 종합적으로 보면 모형의 적합도는 0.507로 상대적으로 높지 않은 것을 볼 수 있으며,
+P(>|t|)는 0이거나, 0.05이상인 것을 확인 할 수 있으므로, 모델이 그리 좋지 않다고 평가 할 수 있다.
+
+
+
+5. 5. Feature importance or Engineering 방법을 해석하고 모델에 적용하시오.
+Feature Importance or engineering 방법을 사용하여, 모델을 해석하거나 적용하시오.
+
+라벨 인코딩과 원-핫 인코딩과 StandardScaler를 한 위경도 값을 클러스터링하는 등등을 통해 Feature Engineering을 하였고, 이를 모델에 적용하였다.
+
+
+
+<빅데이터 시각화>
+1. heatmap을 통해 각 칼럼들의 상관관계를 볼 때, 1에 가까울수록 상관관계가 높으며 숫자가 낮을 수록 상관관계가 낮은 것을 확인 할 수 있다.
+이를 통해 distance와 구하고자 하는 trip_durtaion의 상관관계가 높은 것을 확인 할 수 있다.
+
+3. pick_up의 hour에 따라 plot을 그려본 결과
+각 시간대별로 새벽시간에는 탑승승객이 적었으며, 저녁시간대에 탑승객이 가장 많았음을 확인할 수 있다.
+
+4. 택시의 이동경로를 folium을 통해 확인해본 결과, harversine거리가 최단거리를 알려준다는 장점은 있지만,
+도로의 구조를 정확하게 반영하지 못 한다는 단점을 발견하였다.
+
+5. 택시의 속도를 plot으로 그려본 결과 시속 5~20km/h에서 가장 많았던 것을 확인할 수 있었다.
+
+
+
+
+
+
+

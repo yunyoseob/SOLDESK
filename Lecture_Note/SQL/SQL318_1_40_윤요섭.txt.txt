@@ -1,0 +1,150 @@
+---오라클 문제 연습
+--1번 문제
+select*from emp;
+select empno, ename, sal
+from emp
+where deptno = 10;
+
+--2번 문제
+select*from emp;
+select ename, hiredate, deptno
+from emp
+where deptno = 7369;
+
+--3번 문제
+select*from emp where ename='ALLEN';
+
+--4번 문제
+select*from emp;
+select ename, deptno, sal 
+from emp
+where hiredate='83/01/12';
+
+--5번 문제
+select*from emp;
+select*from emp where job != 'MANAGER';
+
+--6번 문제
+select*from emp where hiredate > '81/04/02';
+
+--7번 문제
+select ename,sal,deptno
+from emp
+where sal > 800;
+
+--8번문제
+select*from emp where deptno >= 20;
+
+--9번문제
+select*from emp where ename > 'K';
+
+--10번문제
+select*from emp where hiredate < '81/12/09';
+
+--11번 문제
+select empno,ename
+from emp
+where empno <= 7698;
+
+--12번 문제
+select ename, sal, deptno
+from emp
+where hiredate > '81/04/02' and hiredate < '82/12/09';
+
+--13번 문제
+select ename, job, sal
+from emp
+where sal > 1600 and sal < 8000;
+
+--14번 문제
+select*from emp where empno >= 7654 and empno <= 7782;
+
+--15번 문제
+select*from emp where ename >= 'B' and ename <='J';
+
+--16번 문제
+select*from emp where hiredate > '82/01/01' or hiredate < '80/12/31';
+
+--17번 문제
+select*from emp where job='MANAGER' or job='SALESMAN';
+
+--18번 문제
+select ename, empno, deptno
+from emp
+where deptno != 20 and deptno != 30;
+
+--19번 문제
+select*from emp where ename like 'S_%';
+
+--20번 문제
+select*from emp where hiredate >='81/01/01' and hiredate <= '81/12/31';
+
+--21번 문제
+select*from emp where ename like('%S%');
+
+--22번 문제
+select*from emp where ename like 'S___T';
+
+--23번 문제
+select*from emp where ename like '_A%';
+
+--24번 문제
+select*from emp where COMM is null;
+
+--25번 문제
+select*from emp where COMM is NOT null;
+
+--26번 문제
+select ename,deptno, sal
+from emp
+where deptno=30 and sal>1500;
+
+--27번 문제
+select ename, empno, deptno
+from emp
+where ename like 'K_%' or deptno=30;
+
+--28번 문제
+select*from emp where sal > 1500 and deptno=30 and job='MANAGER';
+--29번 문제
+select  empno from emp where deptno = 30;
+
+--30번 문제
+select *from  emp  order by  sal desc;
+
+--31번 문제
+select*from emp order by deptno asc, sal desc;
+
+--32번 문제
+select*from emp order by deptno desc, ename asc, sal desc;
+
+--33번 문제
+select ename, sal, comm, sal+comm"총액" from emp order by sal desc;
+
+--34번 문제
+select ename, sal, sal*1.13"bonus", deptno
+from emp;
+
+--35번 문제
+select ename, deptno, sal, sal*11+sal*1.5"연봉"
+from emp where deptno=30;
+
+--36번 문제
+select ename, sal, round(sal/12/5,1)" 시간당 임금" from emp where deptno=20; 
+
+--37번 문제
+select ename, sal, round(sal*0.15,2)" 회비" from emp where sal >= 1500 and sal <= 3000;
+
+--38번 문제
+select ename, sal, sal*0.15"경조비" from emp where sal >= 2000;
+
+--39번 문제
+select*from emp;
+select  deptno, ename, hiredate, sysdate,  months_between(hiredate, sysdate)"근무월수",
+trunc(months_between(hiredate, sysdate)/12,1)"근무년수",
+round(mod(mod(months_between(hiredate, sysdate)/12,1)*12,1)*(365/12),0)"근무일수",
+round(mod(mod(months_between(hiredate, sysdate)/12,1)*12,1)*(365/12),0)*7"근무주수"
+from emp;
+
+--40번 문제
+select ename, sal, sal-sal*0.1"실수령액"   from emp order by sal desc;
